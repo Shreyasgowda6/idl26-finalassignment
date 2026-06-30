@@ -24,6 +24,8 @@ class VGGBlock(nn.Module):
             layers.append(nn.Conv2d(current_in_channels, out_channels, kernel_size=kernel_size, padding=padding))
             layers.append(nn.BatchNorm2d(out_channels))
             layers.append(nn.ReLU(inplace=True))
+            # current_in_channels was never updated here (BUG)
+            current_in_channels = out_channels  # FIXED: subsequent convs in this block must take out_channels as input
             
         layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
         self.block = nn.Sequential(*layers)
@@ -89,7 +91,8 @@ class AlexNet(nn.Module):
         
         self.classifier = nn.Sequential(
             nn.Dropout(p=drop_rate),
-            nn.Linear(2048, 1024),
+            # nn.Linear(2048, 1024),
+            nn.Linear(3072, 1024),  # FIXED: real flattened size for 64x64 input is 192*4*4=3072, not 2048
             nn.ReLU(inplace=True),
             nn.Dropout(p=drop_rate),
             nn.Linear(1024, 1024),
@@ -119,7 +122,8 @@ class VGG16(nn.Module):
         )
         
         self.classifier = nn.Sequential(
-            nn.Linear(2048, 1024),
+            # nn.Linear(2048, 1024),
+            nn.Linear(4608, 1024),  # FIXED: real flattened size for 64x64 input is 192*4*4=4608, not 2048
             nn.ReLU(inplace=True),
             nn.Dropout(p=drop_rate),
             nn.Linear(1024, 512),
