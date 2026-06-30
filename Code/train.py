@@ -38,5 +38,16 @@ def main():
     trainer = Trainer(model, criterion, optimizer, device)
     trainer.fit(train_loader, val_loader, epochs=config["EPOCHS"])
 
+    # Save trained model weights so evaluate.py can load them later
+    import os
+    save_path = f"checkpoints/{config['DATA']}_{config['MODEL']}.pth"
+    os.makedirs("checkpoints", exist_ok=True)
+    torch.save(model.state_dict(), save_path)
+    print(f"Model saved to {save_path}")
+
+
 if __name__ == "__main__":
     main()
+    
+    
+    
