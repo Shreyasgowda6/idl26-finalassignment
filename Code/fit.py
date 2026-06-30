@@ -15,23 +15,33 @@ class Trainer:
     def train_one_epoch(self, dataloader):
         self.model.train()
         running_loss = 0.0
-        correct, sum = 0, 0
+        # correct, sum = 0, 0
+        correct, total = 0, 0  # FIXED: "sum" shadowed Python's built-in sum() function
         
         for images, labels in dataloader:
-            images, labels = images.to(self.device), labels.to(self.device)
-            
+            # images, labels = images.to(self.device), labels.to(self.device)
+            images, labels = images.to(self.device), labels.to(self.device).squeeze(1)            # FIXED: labels were shape (N, 1), CrossEntropyLoss expects (N,) -- squeeze(1) flattens that extra dimension
+
+            # outputs = self.model(images)
+            # loss = self.criterion(outputs, labels)
+            #
+            # loss.backward()
+            # self.optimizer.step()
+            self.optimizer.zero_grad()  # FIXED: was missing entirely -- gradients accumulated across batches without this, destabilizing training
             outputs = self.model(images)
             loss = self.criterion(outputs, labels)
-            
+
             loss.backward()
             self.optimizer.step()
             
             running_loss += loss.item() * images.size(0)
             _, predicted = outputs.max(1)
-            sum += labels.size(0)
+            # sum += labels.size(0)
+            total += labels.size(0)
             correct += predicted.eq(labels).sum().item()
             
-        return running_loss / sum, (correct / sum) * 100
+        # return running_loss / sum, (correct / sum) * 100
+        return running_loss / total, (correct / total) * 100
 
     def evaluate(self, dataloader):
         self.model.eval()
@@ -40,7 +50,9 @@ class Trainer:
         
         with torch.no_grad():
             for images, labels in dataloader:
-                images, labels = images.to(self.device), labels.to(self.device)
+                # images, labels = images.to(self.device), labels.to(self.device)
+                images, labels = images.to(self.device), labels.to(self.device).squeeze(1)
+                # FIXED: same (N, 1) -> (N,) label shape issue as train_one_epoch
                 
                 outputs = self.model(images)
                 loss = self.criterion(outputs, labels)

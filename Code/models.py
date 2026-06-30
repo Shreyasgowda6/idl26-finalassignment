@@ -6,7 +6,7 @@ MG 6/6/2026
 import torch
 import torch.nn as nn
 
-activation_str = "Identity"  # Placeholder for activation function, can be replaced with "ReLU" or others as needed.
+activation_str = "ReLU" # "Identity"  # Placeholder for activation function, can be replaced with "ReLU" or others as needed.
 
 
 class VGGBlock(nn.Module):
@@ -178,3 +178,4 @@ class ResNet18(nn.Module):
         out = self.avgpool(out)
         out = torch.flatten(out, 1)
         self.classifier(out)
+        return out
