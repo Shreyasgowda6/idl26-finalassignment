@@ -186,3 +186,48 @@ class ResNet18(nn.Module):
         out = torch.flatten(out, 1)
         self.classifier(out)
         return out
+
+
+class MiniResNet(nn.Module):
+    """Lightweight ResNet variant for the Green/Efficient model (Part 2).
+    
+    Compared to ResNet18:
+    - Fewer initial channels (32 instead of 64)
+    - Only 3 stages instead of 4 (32->64->128 instead of 64->128->256->512)
+    - ~10x fewer parameters (~1.2M vs ~11M)
+    - Faster training and inference, lower memory usage
+    """
+    def __init__(self, in_channels, num_classes, **kwargs):
+        super().__init__()
+
+        activation = getattr(nn, activation_str)
+
+        self.conv1 = nn.Conv2d(in_channels, 32, kernel_size=3, stride=1, padding=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(32)
+        self.activation = activation(inplace=True)
+
+        self.stage1 = nn.Sequential(
+            ResBlock(32, 32, activation(inplace=True), stride=1),
+            ResBlock(32, 32, activation(inplace=True), stride=1)
+        )
+        self.stage2 = nn.Sequential(
+            ResBlock(32, 64, activation(inplace=True), stride=2),
+            ResBlock(64, 64, activation(inplace=True), stride=1)
+        )
+        self.stage3 = nn.Sequential(
+            ResBlock(64, 128, activation(inplace=True), stride=2),
+            ResBlock(128, 128, activation(inplace=True), stride=1)
+        )
+
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.classifier = nn.Linear(128, num_classes)
+
+    def forward(self, x):
+        out = self.activation(self.bn1(self.conv1(x)))
+        out = self.stage1(out)
+        out = self.stage2(out)
+        out = self.stage3(out)
+        out = self.avgpool(out)
+        out = torch.flatten(out, 1)
+        out = self.classifier(out)
+        return out
