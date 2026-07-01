@@ -1,8 +1,10 @@
 venv/
+venv311/
 __pycache__/
 *.pyc
 .DS_Store
 data/
+outputs/
 Code/data/
 Code/checkpoints/
 *.pt
