@@ -2,4 +2,4 @@ venv/
 __pycache__/
 *.pyc
 .DS_Store
-Code/data/
+Code/data/Code/checkpoints/
