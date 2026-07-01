@@ -27,7 +27,7 @@ DATASETS = {
 
 MODEL_NAMES = ("AlexNet", "VGG16", "ResNet18")
 
-DATA_PATH = "data"
+DATA_PATH = "../data"
 BATCH_SIZE = 32
 DROP_RATE = 0.5
 LEARNING_RATE = 0.001
