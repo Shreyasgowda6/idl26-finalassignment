@@ -41,7 +41,9 @@
             "DATA": "chest",
             "MODEL": "ResNet18",
             "CHANNELS": 1,
-            "NUM_CLASSES": 2
+            "NUM_CLASSES": 2,
+            "LEARNING_RATE": 0.0005,
+            "CLASS_WEIGHTED_LOSS": true
         },
         {
             "DATA": "lesions",
