@@ -78,4 +78,40 @@ These improvements are expected to substantially raise macro F1 scores on the le
 
 ---
 
+---
+
+## Part 2 — Efficient/Green Model: MiniResNet vs ResNet18
+
+MiniResNet is a lightweight ResNet variant with 3 stages (32→64→128 channels) instead of ResNet18's 4 stages (64→128→256→512), and half the initial channel width. Benchmarked on the `cells` dataset (3 channels, 8 classes, 64×64) for 5 epochs.
+
+| Metric | ResNet18 | MiniResNet | Reduction |
+|---|---|---|---|
+| Parameters | 11,172,936 | 696,360 | **93.8% fewer** |
+| Model size | 42.66 MB | 2.67 MB | **93.8% smaller** |
+| Avg epoch time | 94.98s | 28.66s | **69.8% faster** |
+| Inference speed | 2.076 ms/img | 0.594 ms/img | **71.4% faster** |
+| Val accuracy (5 epochs) | 90.64% | 77.91% | -12.73% tradeoff |
+
+MiniResNet uses 93.8% fewer parameters and is 3.5x faster at inference, with a 12.73% accuracy tradeoff after 5 epochs. The accuracy gap is expected to narrow with more epochs — MiniResNet's training accuracy was still climbing at epoch 5 (95.80%) suggesting it had not yet converged. For resource-constrained deployment (mobile, embedded systems), MiniResNet offers a compelling tradeoff.
+
+---
+
+## Part 3 — Transfer Learning on `organs` (scarce data)
+
+The `organs` dataset contains only 500 training images across 11 classes (~45 per class), making it too small to train from scratch effectively. We compared two approaches using ResNet18:
+
+- **From scratch** — random weight initialization, trained on organs for 20 epochs
+- **Transfer learning** — weights loaded from the pretrained `orgs_ResNet18.pth` checkpoint (92.83% accuracy on 15,367 images), then fine-tuned on organs for 20 epochs with a lower learning rate (0.0001 vs 0.001)
+
+| Metric | From Scratch | Transfer Learning | Improvement |
+|---|---|---|---|
+| Test accuracy | 55.00% | 67.00% | **+12.00%** |
+| Macro F1 | 0.4490 | 0.5922 | **+0.1432** |
+| Val stability | Erratic (8%–76%) | Stable (80%–90%) | Much smoother |
+| Epoch 1 val acc | 8.00% | 80.00% | Immediate boost |
+
+Transfer learning provided a **+12% accuracy improvement** and dramatically more stable training. The pretrained model started at 66% train accuracy on epoch 1 — already ahead of where scratch training ended after 20 epochs. This demonstrates that knowledge learned from a related larger dataset (`orgs`) transfers effectively to the smaller dataset (`organs`), since both share the same domain (organ scans, grayscale, 11 classes).
+
+**Recommendation:** For scarce medical imaging datasets, always prefer transfer learning from a related domain over training from scratch. Even a coarse domain match (same organ type, different hospital) yields meaningful accuracy gains.
+
 *Generated as part of IDL26 Final Assignment — Shreyas Hosadurga Sadananda*
