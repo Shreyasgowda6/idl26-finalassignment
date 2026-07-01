@@ -184,7 +184,7 @@ class ResNet18(nn.Module):
         out = self.stage4(out)
         out = self.avgpool(out)
         out = torch.flatten(out, 1)
-        self.classifier(out)
+        out = self.classifier(out)
         return out
 
 
