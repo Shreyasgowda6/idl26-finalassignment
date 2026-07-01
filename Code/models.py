@@ -57,7 +57,7 @@ class ResBlock(nn.Module):
         identity = self.shortcut(x)
         out = self.activation(self.bn1(self.conv1(x)))
         out = self.bn2(self.conv2(out))
-        out += identity  
+        out = out + identity
         out = self.activation(out)
         return out
 
