@@ -58,16 +58,6 @@ def evaluate_test_set(model, test_loader, device):
     }
 
 
-def get_class_weights(train_loader, num_classes, device):
-    counts = torch.zeros(num_classes, dtype=torch.float32)
-    for _, labels in train_loader:
-        labels = labels.squeeze(1).cpu()
-        counts += torch.bincount(labels, minlength=num_classes).float()
-
-    weights = counts.sum() / (num_classes * counts.clamp_min(1))
-    return weights.to(device)
-
-
 def merge_config(base_config, run_config):
     merged = {key: value for key, value in base_config.items() if key != "RUNS"}
     merged.update(run_config)
@@ -92,12 +82,7 @@ def train_one_config(config, device):
         drop_rate=config.get("DROP_RATE", 0.5),
     ).to(device)
 
-    if config.get("CLASS_WEIGHTED_LOSS", False):
-        class_weights = get_class_weights(train_loader, config["NUM_CLASSES"], device)
-        print(f"Using class-weighted loss: {class_weights.detach().cpu().tolist()}")
-        criterion = nn.CrossEntropyLoss(weight=class_weights)
-    else:
-        criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=config["LEARNING_RATE"])
 
     trainer = Trainer(model, criterion, optimizer, device)

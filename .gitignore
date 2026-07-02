@@ -1,5 +1,6 @@
 venv/
 venv311/
+.vscode/
 __pycache__/
 *.pyc
 .DS_Store

@@ -42,8 +42,7 @@
             "MODEL": "ResNet18",
             "CHANNELS": 1,
             "NUM_CLASSES": 2,
-            "LEARNING_RATE": 0.0005,
-            "CLASS_WEIGHTED_LOSS": true
+            "EPOCHS": 30
         },
         {
             "DATA": "lesions",
