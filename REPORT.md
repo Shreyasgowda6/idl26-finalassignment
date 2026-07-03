@@ -103,9 +103,9 @@ The scarce-data `organs` experiment compared training ResNet18 from scratch agai
 
 | Metric | From Scratch | Transfer Learning | Improvement |
 |---|---:|---:|---:|
-| Test accuracy | 55.00% | 67.00% | +12.00% |
-| Macro F1 | 0.4490 | 0.5922 | +0.1432 |
+| Test accuracy | 60.50% | 66.00% | +5.50% |
+| Macro F1 | 0.4939 | 0.5863 | +0.0924 |
 | Validation stability | Erratic | More stable | Improved |
-| Epoch 1 validation accuracy | 8.00% | 80.00% | Immediate boost |
+| Best validation accuracy | 84.00% | 88.00% | +4.00% |
 
-Transfer learning was more effective because the source checkpoint was trained on a related organ-image domain. The pretrained features gave the model a stronger starting point, improved validation stability, and produced a higher final test score than training from random initialization.
+Transfer learning was more effective because the source checkpoint was trained on the larger related `orgs` dataset. The pretrained backbone features gave the model a stronger starting point, while the final classifier was reinitialized for the 11 `organs` classes. The best-validation checkpoint was used for final test evaluation, reducing the effect of last-epoch instability on the scarce-data experiment.
