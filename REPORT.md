@@ -74,17 +74,28 @@ Future improvements for the imbalanced datasets would include class-weighted los
 
 ## Part 2 - Efficient/Green Model: MiniResNet vs ResNet18
 
-MiniResNet is a lightweight ResNet-style model with fewer stages and fewer channels than ResNet18. It was added to reduce parameter count, model size, training time, and inference latency.
+MiniResNet is a lightweight ResNet-style model with fewer stages and fewer channels than ResNet18. It was added to reduce parameter count, model size, training time, inference latency, and GPU memory usage.
 
-| Metric | ResNet18 | MiniResNet | Reduction |
-|---|---:|---:|---:|
-| Parameters | 11,172,936 | 696,360 | 93.8% fewer |
-| Model size | 42.66 MB | 2.67 MB | 93.8% smaller |
-| Avg epoch time | 94.98s | 28.66s | 69.8% faster |
-| Inference speed | 2.076 ms/img | 0.594 ms/img | 71.4% faster |
-| Val accuracy (5 epochs) | 90.64% | 77.91% | -12.73% |
+To evaluate the green-model tradeoff, ResNet18 and MiniResNet were compared on all four datasets for 20 epochs using the same optimizer, batch size, learning rate, and data splits. Because validation accuracy fluctuated during training, each model was evaluated from its best validation checkpoint rather than from the final epoch. This avoids reporting an unlucky final checkpoint and gives a fairer comparison of efficiency against accuracy.
 
-MiniResNet substantially reduces compute and memory cost, but it trades away accuracy after short training. This makes it useful for resource-constrained settings where model size and latency matter more than maximum performance. For the final benchmark datasets, the full ResNet18 remains the stronger accuracy-oriented option.
+| Dataset | Model | Best Val Epoch | Test Accuracy | Parameters | Model Size | Train Time | Inference Latency | Peak Train Memory | Peak Inference Memory |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| cells | ResNet18 | 20 | 97.87% | 11,172,936 | 42.66 MB | 546.78s | 0.6110 ms/sample | 827.90 MB | 385.94 MB |
+| cells | MiniResNet | 19 | 97.69% | 696,360 | 2.67 MB | 181.41s | 0.1675 ms/sample | 322.66 MB | 125.46 MB |
+| chest | ResNet18 | 19 | 87.50% | 11,168,706 | 42.64 MB | 204.98s | 0.6013 ms/sample | 830.33 MB | 383.12 MB |
+| chest | MiniResNet | 17 | 94.39% | 695,010 | 2.66 MB | 68.89s | 0.1596 ms/sample | 321.26 MB | 124.44 MB |
+| lesions | ResNet18 | 19 | 76.91% | 11,172,423 | 42.66 MB | 319.83s | 0.6028 ms/sample | 827.52 MB | 383.56 MB |
+| lesions | MiniResNet | 20 | 76.91% | 696,231 | 2.66 MB | 106.13s | 0.1615 ms/sample | 322.65 MB | 125.46 MB |
+| orgs | ResNet18 | 18 | 92.20% | 11,173,323 | 42.66 MB | 593.78s | 0.6123 ms/sample | 827.79 MB | 382.07 MB |
+| orgs | MiniResNet | 18 | 92.47% | 696,171 | 2.66 MB | 202.06s | 0.1616 ms/sample | 321.28 MB | 124.46 MB |
+
+Across all datasets, MiniResNet used about 93.8% fewer parameters and reduced model size from about 42.66 MB to about 2.66 MB. It also reduced training time by roughly two thirds, lowered inference latency from about 0.61 ms/sample to about 0.16 ms/sample, and cut peak GPU memory use substantially during both training and inference.
+
+The accuracy tradeoff was favorable overall. On `cells`, MiniResNet was only 0.18 percentage points lower than ResNet18. On `lesions`, both models achieved the same test accuracy. On `orgs`, MiniResNet was slightly higher than ResNet18. On `chest`, MiniResNet achieved higher test accuracy than the ResNet18 green-profile run while still using far fewer parameters, less memory, and lower latency.
+
+The `chest` dataset showed higher run-to-run variance during the green-profile experiments. Therefore, the `chest` result is interpreted as evidence that MiniResNet can achieve comparable accuracy at lower computational cost, rather than as a definitive ranking over ResNet18.
+
+Overall, MiniResNet is a strong green alternative when efficiency is important. Across the four green-profile comparisons, it preserved comparable accuracy while operating at a fraction of the computational cost.
 
 ## Part 3 - Transfer Learning on organs
 

@@ -33,6 +33,48 @@ RUNS = [
         "NUM_CLASSES": 8,
         "EPOCHS": 20,
     },
+    {
+        "DATA": "chest",
+        "MODEL": "ResNet18",
+        "CHANNELS": 1,
+        "NUM_CLASSES": 2,
+        "EPOCHS": 20,
+    },
+    {
+        "DATA": "chest",
+        "MODEL": "MiniResNet",
+        "CHANNELS": 1,
+        "NUM_CLASSES": 2,
+        "EPOCHS": 20,
+    },
+    {
+        "DATA": "lesions",
+        "MODEL": "ResNet18",
+        "CHANNELS": 3,
+        "NUM_CLASSES": 7,
+        "EPOCHS": 20,
+    },
+    {
+        "DATA": "lesions",
+        "MODEL": "MiniResNet",
+        "CHANNELS": 3,
+        "NUM_CLASSES": 7,
+        "EPOCHS": 20,
+    },
+    {
+        "DATA": "orgs",
+        "MODEL": "ResNet18",
+        "CHANNELS": 1,
+        "NUM_CLASSES": 11,
+        "EPOCHS": 20,
+    },
+    {
+        "DATA": "orgs",
+        "MODEL": "MiniResNet",
+        "CHANNELS": 1,
+        "NUM_CLASSES": 11,
+        "EPOCHS": 20,
+    },
 ]
 
 BASE_CONFIG = {
@@ -42,6 +84,21 @@ BASE_CONFIG = {
     "LEARNING_RATE": 0.001,
     "RESULTS_PATH": "../outputs/green_profile_results.csv",
 }
+
+FIELDNAMES = [
+    "dataset",
+    "model",
+    "epochs",
+    "best_epoch",
+    "best_val_accuracy",
+    "accuracy",
+    "parameters",
+    "model_size_mb",
+    "train_seconds",
+    "inference_ms_per_sample",
+    "peak_train_memory_mb",
+    "peak_inference_memory_mb",
+]
 
 
 def get_device():
@@ -244,7 +301,9 @@ def run_profile(config, device):
     print(
         f"Accuracy: {accuracy:.2f}% | Params: {params:,} | "
         f"Size: {size_mb:.2f} MB | Train: {train_seconds:.2f}s | "
-        f"Inference: {latency_ms:.4f} ms/sample"
+        f"Inference: {latency_ms:.4f} ms/sample | "
+        f"Peak train memory: {peak_train_mb:.2f} MB | "
+        f"Peak inference memory: {peak_infer_mb:.2f} MB"
     )
     return result
 
@@ -253,23 +312,8 @@ def write_results(rows, results_path):
     path = Path(results_path)
     path.parent.mkdir(exist_ok=True)
 
-    fieldnames = [
-        "dataset",
-        "model",
-        "epochs",
-        "best_epoch",
-        "best_val_accuracy",
-        "accuracy",
-        "parameters",
-        "model_size_mb",
-        "train_seconds",
-        "inference_ms_per_sample",
-        "peak_train_memory_mb",
-        "peak_inference_memory_mb",
-    ]
-
     with path.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
         writer.writeheader()
         writer.writerows(rows)
 
