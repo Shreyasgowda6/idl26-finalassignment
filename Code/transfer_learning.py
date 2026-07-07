@@ -5,6 +5,8 @@ a pretrained orgs checkpoint on the tiny organs dataset.
 """
 import time
 import os
+import csv
+import copy
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -13,7 +15,7 @@ from data import get_loaders
 from models import ResNet18
 
 DATASET      = "organs"
-DATA_PATH    = "data"
+DATA_PATH    = "../data"
 BATCH_SIZE   = 16       # smaller batch — tiny dataset
 CHANNELS     = 1
 NUM_CLASSES  = 11
@@ -54,6 +56,8 @@ def train_model(model, train_loader, val_loader, epochs, lr, label):
 
     print(f"\n── {label} ──")
     best_val_acc = 0
+    best_state = copy.deepcopy(model.state_dict())
+    best_epoch = 0
 
     for epoch in range(epochs):
         model.train()
@@ -84,14 +88,35 @@ def train_model(model, train_loader, val_loader, epochs, lr, label):
                 v_total += labels.size(0)
                 v_correct += predicted.eq(labels).sum().item()
         val_acc = (v_correct / v_total) * 100
-        best_val_acc = max(best_val_acc, val_acc)
+        if val_acc > best_val_acc:
+            best_val_acc = val_acc
+            best_state = copy.deepcopy(model.state_dict())
+            best_epoch = epoch + 1
 
         print(f"   Epoch [{epoch+1:02d}/{epochs}] "
               f"Train Acc: {train_acc:.2f}%  "
               f"Val Acc: {val_acc:.2f}%")
 
-    print(f"   Best val acc: {best_val_acc:.2f}%")
+    model.load_state_dict(best_state)
+    print(f"   Best val acc: {best_val_acc:.2f}% at epoch {best_epoch}")
     return model
+
+
+def load_backbone_weights(model, checkpoint_path):
+    checkpoint = torch.load(checkpoint_path, map_location=device)
+    checkpoint = {
+        key: value
+        for key, value in checkpoint.items()
+        if not key.startswith("classifier")
+    }
+    missing_keys, unexpected_keys = model.load_state_dict(checkpoint, strict=False)
+    print(f"\nLoaded backbone weights from {checkpoint_path}")
+    print("Classifier head reinitialized for organs.")
+    if unexpected_keys:
+        print(f"Unexpected keys skipped: {unexpected_keys}")
+    classifier_keys = [key for key in missing_keys if key.startswith("classifier")]
+    if classifier_keys:
+        print(f"Classifier keys trained from scratch: {classifier_keys}")
 
 
 # ── Load data ────────────────────────────────────────────────────────────────
@@ -119,8 +144,7 @@ if not os.path.exists(PRETRAINED):
     print("Please run train.py with orgs/ResNet18 config first.")
     exit(1)
 
-model_transfer.load_state_dict(torch.load(PRETRAINED, map_location=device))
-print(f"\nLoaded pretrained weights from {PRETRAINED}")
+load_backbone_weights(model_transfer, PRETRAINED)
 
 model_transfer = train_model(
     model_transfer, train_loader, val_loader,
@@ -136,13 +160,73 @@ print("TRANSFER LEARNING RESULTS — TEST SET")
 print("=" * 60)
 print(f"\n{'From Scratch accuracy:':<35} {scratch_acc:.2f}%")
 print(f"{'Transfer Learning accuracy:':<35} {transfer_acc:.2f}%")
-print(f"{'Improvement:':<35} +{transfer_acc - scratch_acc:.2f}%")
+print(f"{'Improvement:':<35} {transfer_acc - scratch_acc:+.2f}%")
 
 print("\n── From Scratch — per-class metrics ──")
 print(classification_report(scratch_labels, scratch_preds, digits=4))
 
 print("\n── Transfer Learning — per-class metrics ──")
 print(classification_report(transfer_labels, transfer_preds, digits=4))
+
+# Save transfer-learning comparison
+output_dir = os.path.join(os.path.dirname(__file__), "..", "outputs")
+os.makedirs(output_dir, exist_ok=True)
+csv_path = os.path.join(output_dir, "transfer_learning_results.csv")
+
+scratch_report = classification_report(
+    scratch_labels,
+    scratch_preds,
+    digits=4,
+    output_dict=True,
+    zero_division=0,
+)
+transfer_report = classification_report(
+    transfer_labels,
+    transfer_preds,
+    digits=4,
+    output_dict=True,
+    zero_division=0,
+)
+
+rows = [
+    {
+        "dataset": DATASET,
+        "model": "ResNet18",
+        "training_mode": "scratch",
+        "epochs": EPOCHS,
+        "learning_rate": LR_SCRATCH,
+        "checkpoint": "",
+        "accuracy": f"{scratch_acc:.4f}",
+        "macro_precision": f"{scratch_report['macro avg']['precision']:.4f}",
+        "macro_recall": f"{scratch_report['macro avg']['recall']:.4f}",
+        "macro_f1": f"{scratch_report['macro avg']['f1-score']:.4f}",
+        "weighted_precision": f"{scratch_report['weighted avg']['precision']:.4f}",
+        "weighted_recall": f"{scratch_report['weighted avg']['recall']:.4f}",
+        "weighted_f1": f"{scratch_report['weighted avg']['f1-score']:.4f}",
+    },
+    {
+        "dataset": DATASET,
+        "model": "ResNet18",
+        "training_mode": "transfer_from_orgs",
+        "epochs": EPOCHS,
+        "learning_rate": LR_FINETUNE,
+        "checkpoint": PRETRAINED,
+        "accuracy": f"{transfer_acc:.4f}",
+        "macro_precision": f"{transfer_report['macro avg']['precision']:.4f}",
+        "macro_recall": f"{transfer_report['macro avg']['recall']:.4f}",
+        "macro_f1": f"{transfer_report['macro avg']['f1-score']:.4f}",
+        "weighted_precision": f"{transfer_report['weighted avg']['precision']:.4f}",
+        "weighted_recall": f"{transfer_report['weighted avg']['recall']:.4f}",
+        "weighted_f1": f"{transfer_report['weighted avg']['f1-score']:.4f}",
+    },
+]
+
+with open(csv_path, "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+    writer.writeheader()
+    writer.writerows(rows)
+
+print(f"Transfer-learning results saved to {csv_path}")
 
 # Save transfer model
 os.makedirs("checkpoints", exist_ok=True)

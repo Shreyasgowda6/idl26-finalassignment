@@ -57,7 +57,7 @@ class ResBlock(nn.Module):
         identity = self.shortcut(x)
         out = self.activation(self.bn1(self.conv1(x)))
         out = self.bn2(self.conv2(out))
-        out += identity  
+        out = out + identity
         out = self.activation(out)
         return out
 
@@ -184,7 +184,7 @@ class ResNet18(nn.Module):
         out = self.stage4(out)
         out = self.avgpool(out)
         out = torch.flatten(out, 1)
-        self.classifier(out)
+        out = self.classifier(out)
         return out
 
 

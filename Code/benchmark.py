@@ -11,11 +11,11 @@ from data import get_loaders
 from models import ResNet18, MiniResNet
 
 DATASET     = "cells"
-DATA_PATH   = "data"
+DATA_PATH   = "../data"
 BATCH_SIZE  = 32
 CHANNELS    = 3
 NUM_CLASSES = 8
-EPOCHS      = 5
+EPOCHS      = 10
 LR          = 0.001
 
 device = torch.device(

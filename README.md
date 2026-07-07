@@ -95,14 +95,14 @@ Example `config.json`:
 ```json
 {
     "DATA": "cells",
-    "DATA_PATH": "data",
+    "DATA_PATH": "../data",
     "BATCH_SIZE": 32,
     "MODEL": "ResNet18",
     "CHANNELS": 3,
     "NUM_CLASSES": 8,
     "DROP_RATE": 0.5,
     "LEARNING_RATE": 0.001,
-    "EPOCHS": 10
+    "EPOCHS": 20
 }
 ```
 
@@ -133,10 +133,10 @@ Reports accuracy, precision, recall, and macro F1 on the held-out test set.
 
 | Dataset | Best Model | Accuracy | Macro F1 | Min Target | Pass |
 |---|---|---|---|---|---|
-| cells | AlexNet | 94.50% | 0.9366 | 90% | ✅ |
-| chest | ResNet18 | 91.51% | 0.9065 | 87% | ✅ |
-| lesions | ResNet18 | 71.67% | 0.4466 | 67% | ✅ |
-| orgs | ResNet18 | 92.83% | 0.9178 | 83% | ✅ |
+| cells | ResNet18 | 97.16% | 0.9719 | 90% | ✅ |
+| chest | ResNet18 | 90.06% | 0.8890 | 87% | ✅ |
+| lesions | ResNet18 | 76.61% | 0.4834 | 67% | ✅ |
+| orgs | VGG16 | 90.06% | 0.8857 | 83% | ✅ |
 
 Full results across all 12 model/dataset combinations: [REPORT.md](REPORT.md)
 
