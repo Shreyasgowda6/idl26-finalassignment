@@ -5,7 +5,6 @@ __pycache__/
 *.pyc
 .DS_Store
 data/
-outputs/
 MANUAL_RESULTS.md
 Code/data/
 Code/checkpoints/
