@@ -88,7 +88,6 @@ Bug audit for the corrupted medical imaging codebase. All bugs were identified, 
 | **Type** | Silent bug |
 | **Before** | `self.classifier(out)` / `return out` |
 | **After** | `out = self.classifier(out)` / `return out` |
-| **Commit** | `1addfcd4` |
 | **Why** | `self.classifier(out)` computed the final class predictions but discarded the result — it was never assigned to anything. `return out` then returned the pre-classifier flattened tensor instead of actual predictions. The model ran without crashing but its output was meaningless (wrong shape, wrong values). |
 
 ---
