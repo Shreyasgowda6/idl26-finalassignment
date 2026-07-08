@@ -60,18 +60,7 @@ Bug audit for the corrupted medical imaging codebase. All bugs were identified, 
 | **After** | `out = out + identity` |
 | **Why** | In-place operations can corrupt tensor values PyTorch needs for computing gradients during backpropagation, causing `RuntimeError` about in-place modification. Using `out = out + identity` creates a new tensor safely. |
 
-### Bug 6 — `ResBlock.forward`: missing residual skip connection
-| Field | Detail |
-|---|---|
-| **File** | `Code/models.py` |
-| **Line** | ~61 |
-| **Type** | Silent architecture bug |
-| **Before** | Residual branch output was returned without adding the original identity path |
-| **After** | Added the residual connection between the transformed output and the identity path |
-| **Commit** | `042865e5` |
-| **Why** | A ResNet block is supposed to add the learned transformation back to the original input. Without that skip connection, the block behaves like a plain convolutional block instead of a residual block, which weakens gradient flow and makes `ResNet18` different from the intended architecture. |
-
-### Bug 7 — `AlexNet.__init__`: hardcoded `in_channels=3` and `num_classes=11`
+### Bug 6 — `AlexNet.__init__`: hardcoded `in_channels=3` and `num_classes=11`
 | Field | Detail |
 |---|---|
 | **File** | `Code/models.py` |
@@ -81,7 +70,7 @@ Bug audit for the corrupted medical imaging codebase. All bugs were identified, 
 | **After** | `def __init__(self, in_channels, num_classes, **kwargs)` / `nn.Conv2d(in_channels, 48, ...)` / `nn.Linear(1024, num_classes)` |
 | **Why** | `in_channels` and `num_classes` were not parameters — they were hardcoded to 3 and 11. This crashed on grayscale datasets (`chest`, `orgs`, `organs` — 1 channel) and silently produced wrong-shaped output on datasets with different class counts (`cells`=8, `chest`=2, `lesions`=7). VGG16 and ResNet18 already accepted these as constructor arguments; AlexNet needed to match. |
 
-### Bug 8 — `AlexNet` and `VGG16`: hardcoded `Linear(2048, ...)` input size
+### Bug 7 — `AlexNet` and `VGG16`: hardcoded `Linear(2048, ...)` input size
 | Field | Detail |
 |---|---|
 | **File** | `Code/models.py` |
@@ -91,7 +80,7 @@ Bug audit for the corrupted medical imaging codebase. All bugs were identified, 
 | **After** | `nn.Linear(3072, 1024)` for AlexNet / `nn.Linear(4608, 1024)` for VGG16 |
 | **Why** | The flattened feature size after the convolutional layers depends on the final spatial dimensions × channel count. For 64×64 inputs: AlexNet produces `192×4×4 = 3072` features, VGG16 produces `512×3×3 = 4608`. The hardcoded `2048` was wrong for both, causing a matrix-multiplication shape mismatch crash on the first forward pass. |
 
-### Bug 9 — `ResNet18.forward`: classifier output not assigned or returned
+### Bug 8 — `ResNet18.forward`: classifier output not assigned or returned
 | Field | Detail |
 |---|---|
 | **File** | `Code/models.py` |
@@ -106,7 +95,7 @@ Bug audit for the corrupted medical imaging codebase. All bugs were identified, 
 
 ## Code/train.py
 
-### Bug 10 — `drop_rate=0.99` (extreme dropout)
+### Bug 9 — `drop_rate=0.99` (extreme dropout)
 | Field | Detail |
 |---|---|
 | **File** | `Code/train.py` |
@@ -116,7 +105,7 @@ Bug audit for the corrupted medical imaging codebase. All bugs were identified, 
 | **After** | `model_class(..., drop_rate=config.get("DROP_RATE", 0.5), ...)` |
 | **Why** | `nn.Dropout(p=0.99)` zeros out 99% of neurons during each forward pass. Normal values are 0.2–0.5. At 0.99, the network has almost nothing to learn from per batch — training was crippled without crashing. Fixed to be configurable via `config.json`, defaulting to a sane 0.5. |
 
-### Bug 11 — `activation_str=None` (dead argument)
+### Bug 10 — `activation_str=None` (dead argument)
 | Field | Detail |
 |---|---|
 | **File** | `Code/train.py` |
@@ -126,7 +115,7 @@ Bug audit for the corrupted medical imaging codebase. All bugs were identified, 
 | **After** | Argument removed entirely |
 | **Why** | No model class in `models.py` accepts `activation_str` as a parameter. It was silently absorbed into `**kwargs` and ignored — misleading code that appeared to configure something but did nothing. |
 
-### Bug 12 — Device selection missing MPS (Apple Silicon GPU)
+### Bug 11 — Device selection missing MPS (Apple Silicon GPU)
 | Field | Detail |
 |---|---|
 | **File** | `Code/train.py` |
@@ -140,7 +129,7 @@ Bug audit for the corrupted medical imaging codebase. All bugs were identified, 
 
 ## Code/fit.py
 
-### Bug 13 — Missing `optimizer.zero_grad()`
+### Bug 12 — Missing `optimizer.zero_grad()`
 | Field | Detail |
 |---|---|
 | **File** | `Code/fit.py` |
@@ -150,7 +139,7 @@ Bug audit for the corrupted medical imaging codebase. All bugs were identified, 
 | **After** | `self.optimizer.zero_grad()` added before each forward pass |
 | **Why** | PyTorch accumulates gradients by default — they are not reset between batches automatically. Without `zero_grad()`, gradients from batch 1 stack on top of batch 2, then batch 3, growing increasingly wrong with every step. No crash occurs, but training becomes unstable and the model cannot converge properly. |
 
-### Bug 14 — Labels shape `(N, 1)` instead of `(N,)`
+### Bug 13 — Labels shape `(N, 1)` instead of `(N,)`
 | Field | Detail |
 |---|---|
 | **File** | `Code/fit.py` |
@@ -160,7 +149,7 @@ Bug audit for the corrupted medical imaging codebase. All bugs were identified, 
 | **After** | `images, labels = images.to(self.device), labels.to(self.device).squeeze(1)` |
 | **Why** | Dataset labels are stored with shape `(N, 1)` — confirmed via testing (`torch.Size([32, 1])`). `nn.CrossEntropyLoss` requires targets shaped `(N,)` (1D integer class indices). Feeding `(N, 1)` caused `RuntimeError: 0D or 1D target tensor expected, multi-target not supported`. Fixed by calling `.squeeze(1)` to remove the extra dimension. Applied in both `train_one_epoch` and `evaluate`. |
 
-### Bug 15 — Variable named `sum` shadows Python built-in
+### Bug 14 — Variable named `sum` shadows Python built-in
 | Field | Detail |
 |---|---|
 | **File** | `Code/fit.py` |
@@ -181,18 +170,17 @@ Bug audit for the corrupted medical imaging codebase. All bugs were identified, 
 | 3 | models.py | `activation_str = "Identity"` — no nonlinearity | Silent |
 | 4 | models.py | VGGBlock channel not updated in loop | Crash |
 | 5 | models.py | ResBlock in-place `+=` on residual | Numerical |
-| 6 | models.py | ResBlock missing residual skip connection | Silent |
-| 7 | models.py | AlexNet hardcoded `in_channels=3`, `num_classes=11` | Crash + Silent |
-| 8 | models.py | AlexNet/VGG16 wrong Linear input size (2048) | Crash |
-| 9 | models.py | ResNet18 classifier output not assigned/returned | Silent |
-| 10 | train.py | `drop_rate=0.99` cripples training | Numerical |
-| 11 | train.py | `activation_str=None` dead argument | Dead code |
-| 12 | train.py | MPS device not checked (Mac GPU unused) | Performance |
-| 13 | fit.py | Missing `optimizer.zero_grad()` | Numerical |
-| 14 | fit.py | Labels `(N,1)` not squeezed to `(N,)` | Crash |
-| 15 | fit.py | Variable `sum` shadows Python built-in | Code quality |
+| 6 | models.py | AlexNet hardcoded `in_channels=3`, `num_classes=11` | Crash + Silent |
+| 7 | models.py | AlexNet/VGG16 wrong Linear input size (2048) | Crash |
+| 8 | models.py | ResNet18 classifier output not assigned/returned | Silent |
+| 9 | train.py | `drop_rate=0.99` cripples training | Numerical |
+| 10 | train.py | `activation_str=None` dead argument | Dead code |
+| 11 | train.py | MPS device not checked (Mac GPU unused) | Performance |
+| 12 | fit.py | Missing `optimizer.zero_grad()` | Numerical |
+| 13 | fit.py | Labels `(N,1)` not squeezed to `(N,)` | Crash |
+| 14 | fit.py | Variable `sum` shadows Python built-in | Code quality |
 
-**Total: 15 bugs across 4 files**
+**Total: 14 bugs across 4 files**
 
 ---
 
