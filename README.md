@@ -1,159 +1,214 @@
-# MAI - IDL 2026 — Final Project Assignment
+# MAI - IDL 2026 Final Project Assignment
 
-## Author
+## Team Members
 
-| Field | Detail |
+| Name | Enrollment Number |
 |---|---|
-| **Name** | Shreyas Hosadurga Sadananda |
-| **Enrollment Number** | *(add your enrollment number here)* |
-| **Repository** | https://github.com/Shreyasgowda6/idl26-finalassignment-shreyas_hosadurga_sadananda |
+| Shreyas Hosadurga Sadananda | 10013494 |
+| Suhaim Manna |  |
+
+Repository:  https://github.com/Shreyasgowda6/idl26-finalassignment | https://github.com/suhaimz11/idl26-finalassignment
 
 ---
 
 ## Project Summary
 
-This repository contains the completed final assignment for Introduction to Deep Learning (IDL) 2026. The task involved auditing and repairing a corrupted medical image classification pipeline, then extending it with an efficient model variant and transfer learning on a scarce dataset.
+This repository contains the completed final assignment for Introduction to Deep Learning (IDL) 2026. The project repairs and extends a recovered medical image classification pipeline. The final code supports training, evaluation, benchmarking, green model profiling, and transfer learning.
 
-The codebase supports training and evaluating three CNN architectures — **ResNet18**, **VGG16**, and **AlexNet** — across four medical imaging datasets (`cells`, `chest`, `lesions`, `orgs`), plus transfer learning on a fifth small dataset (`organs`).
+The main benchmark evaluates **AlexNet**, **VGG16**, and **ResNet18** on four medical imaging datasets:
+
+- `cells`
+- `chest`
+- `lesions`
+- `orgs`
+
+The project also includes:
+
+- an efficient **MiniResNet** model for the Green Initiative analysis
+- transfer learning from `orgs` to the scarce `organs` dataset
+- CSV logging for benchmark, evaluation, green-profile, and transfer-learning results
 
 ---
 
 ## Repository Structure
 
-```
-idl26-finalassignment-shreyas_hosadurga_sadananda/
-│
-├── Code/
-│   ├── data.py            # Dataset loading and train/val/test splitting
-│   ├── models.py          # AlexNet, VGG16, ResNet18 model definitions
-│   ├── train.py           # Training entry point (reads config.json)
-│   ├── fit.py             # Trainer class: training loop and evaluation
-│   ├── evaluate.py        # Test set evaluation: accuracy, precision, recall, F1
-│   ├── config.json        # Central config: dataset, model, hyperparameters
-│   └── data/              # Dataset .pt files — download separately (link below)
-│
-├── AUDIT_LOG.md           # Bug audit: 14 bugs found and fixed across 4 files
-├── REPORT.md              # Benchmark results and architectural recommendations
-├── assignment_final.pdf   # Original assignment description
-└── README.md              # This file
+```text
+idl26-finalassignment/
+|
+|-- Code/
+|   |-- data.py                 # Dataset loading and train/val/test splitting
+|   |-- fit.py                  # Trainer class and training loop
+|   |-- models.py               # AlexNet, VGG16, ResNet18, MiniResNet
+|   |-- train.py                # Single-run training entry point
+|   |-- train_all.py            # Runs all dataset/model benchmark configs
+|   |-- evaluate.py             # Evaluates checkpoints and saves CSV metrics
+|   |-- green_profile.py        # Part 2 green-model profiling
+|   |-- transfer_learning.py    # Part 3 scarce-data transfer learning
+|   |-- config.json             # Single-run config
+|   |-- config_all.json         # Full benchmark config
+|
+|-- data/                       # Dataset .pt files, not committed
+|-- outputs/                    # Generated CSV result files, not committed
+|-- AUDIT_LOG.md                # Bug audit and fixes
+|-- REPORT.md                   # Benchmark, green-model, and transfer-learning report
+|-- assignment_final.pdf        # Original assignment description
+|-- README.md                   # This file
 ```
 
 ---
 
-## Setup Instructions
+## Setup
 
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/Shreyasgowda6/idl26-finalassignment-shreyas_hosadurga_sadananda.git
-cd idl26-finalassignment-shreyas_hosadurga_sadananda
-```
-
-### 2. Create and activate a virtual environment
+Create and activate a Python environment:
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+python -m venv venv
 ```
 
-### 3. Install dependencies
+On Windows PowerShell:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+.\venv\Scripts\Activate.ps1
+```
+
+Install dependencies:
 
 ```bash
 pip install torch torchvision numpy scikit-learn
 ```
 
-### 4. Download the datasets
-
-Download from: https://cloud.fiw.fhws.de/s/LpYa2dCW85kwdNn
-
-Place all `.pt` files into `Code/data/`:
-
-```
-Code/data/
-    cells.pt
-    chest.pt
-    lesions.pt
-    orgs.pt
-    organs.pt
-```
+For CUDA GPU support, install a CUDA-enabled PyTorch build appropriate for the local GPU and Python version.
 
 ---
 
-## How to Run
+## Data
 
-### Train a model
+Download the assignment datasets from:
 
-Edit `Code/config.json` to set your dataset and model, then run from inside `Code/`:
+https://cloud.fiw.fhws.de/s/LpYa2dCW85kwdNn
 
-```bash
-cd Code
-python3 train.py
+Place the `.pt` files in the root-level `data/` folder:
+
+```text
+data/
+|-- cells.pt
+|-- chest.pt
+|-- lesions.pt
+|-- orgs.pt
+|-- organs.pt
 ```
 
-Example `config.json`:
+The expected dataset metadata is:
 
-```json
-{
-    "DATA": "cells",
-    "DATA_PATH": "../data",
-    "BATCH_SIZE": 32,
-    "MODEL": "ResNet18",
-    "CHANNELS": 3,
-    "NUM_CLASSES": 8,
-    "DROP_RATE": 0.5,
-    "LEARNING_RATE": 0.001,
-    "EPOCHS": 20
-}
-```
-
-**Config reference per dataset:**
-
-| Dataset | CHANNELS | NUM_CLASSES |
-|---|---|---|
+| Dataset | Channels | Classes |
+|---|---:|---:|
 | cells | 3 | 8 |
 | chest | 1 | 2 |
 | lesions | 3 | 7 |
 | orgs | 1 | 11 |
 | organs | 1 | 11 |
 
-Trained model weights are saved automatically to `Code/checkpoints/{DATA}_{MODEL}.pth`.
+---
 
-### Evaluate a trained model
+## Running the Code
+
+Run commands from inside the `Code/` directory:
 
 ```bash
 cd Code
-python3 evaluate.py
 ```
 
-Reports accuracy, precision, recall, and macro F1 on the held-out test set.
+### Train One Model
+
+Edit `config.json`, then run:
+
+```bash
+python train.py
+```
+
+Checkpoints are saved to:
+
+```text
+Code/checkpoints/{DATA}_{MODEL}.pth
+```
+
+### Evaluate One Model
+
+```bash
+python evaluate.py
+```
+
+### Evaluate All Checkpoints
+
+```bash
+python evaluate.py --all
+```
+
+This writes:
+
+```text
+outputs/evaluation_results.csv
+```
+
+### Run the Full Benchmark
+
+```bash
+python train_all.py
+```
+
+This uses `config_all.json` and writes:
+
+```text
+outputs/benchmark_results.csv
+```
+
+### Run Green Model Profiling
+
+```bash
+python green_profile.py
+```
+
+This compares ResNet18 and MiniResNet across all four main datasets and writes:
+
+```text
+outputs/green_profile_results.csv
+```
+
+### Run Transfer Learning
+
+```bash
+python transfer_learning.py
+```
+
+This compares scratch training against transfer learning from the larger `orgs` checkpoint to the smaller `organs` dataset and writes:
+
+```text
+outputs/transfer_learning_results.csv
+```
 
 ---
 
 ## Results Summary
 
-| Dataset | Best Model | Accuracy | Macro F1 | Min Target | Pass |
-|---|---|---|---|---|---|
-| cells | ResNet18 | 97.16% | 0.9719 | 90% | ✅ |
-| chest | ResNet18 | 90.06% | 0.8890 | 87% | ✅ |
-| lesions | ResNet18 | 76.61% | 0.4834 | 67% | ✅ |
-| orgs | VGG16 | 90.06% | 0.8857 | 83% | ✅ |
+| Dataset | Best Model | Accuracy | Macro F1 | Target | Pass |
+|---|---|---:|---:|---:|---|
+| cells | ResNet18 | 97.16% | 0.9719 | 90% | Yes |
+| chest | ResNet18 | 90.06% | 0.8890 | 87% | Yes |
+| lesions | ResNet18 | 76.61% | 0.4834 | 67% | Yes |
+| orgs | VGG16 | 90.06% | 0.8857 | 83% | Yes |
 
-Full results across all 12 model/dataset combinations: [REPORT.md](REPORT.md)
+All 12 main benchmark runs passed the required target accuracies. Full benchmark details, green-model analysis, and transfer-learning analysis are available in [REPORT.md](REPORT.md).
 
 ---
 
-## What Was Fixed
+## Main Deliverables
 
-14 bugs were identified and fixed across 4 files:
-
-| File | Bugs Fixed |
+| File | Purpose |
 |---|---|
-| `data.py` | Wrong filename pattern, data leakage in train/val split |
-| `models.py` | Broken activation function, VGGBlock channel propagation bug, AlexNet hardcoded channels/classes, wrong Linear input sizes, missing return statement in ResNet18 |
-| `train.py` | Extreme dropout (0.99), dead kwarg argument, missing MPS device support for Apple Silicon |
-| `fit.py` | Missing `zero_grad()`, wrong label shape `(N,1)` vs `(N,)`, variable `sum` shadowing Python built-in |
-
-Full bug-by-bug audit with before/after code and explanations: [AUDIT_LOG.md](AUDIT_LOG.md)
+| `AUDIT_LOG.md` | Documents discovered bugs, root causes, fixes, and commit hashes |
+| `REPORT.md` | Contains benchmark results, recommendations, Green Initiative analysis, and transfer-learning analysis |
+| `Code/` | Contains the corrected and extended training/evaluation pipeline |
 
 ---
 
@@ -163,15 +218,15 @@ Welcome to the official repository template for the **Introduction to Deep Learn
 
 ### Overview
 
-This repository contains the volatile, recovered remnants of a broken machine learning pipeline. Your mission is to audit the codebase, stabilize the system, optimize its computational footprint, and successfully deploy models across all target datasets.
+This repository contains the volatile, recovered remnants of a broken machine learning pipeline. The assignment requires auditing the codebase, stabilizing the system, optimizing its computational footprint, and deploying models across all target datasets.
 
-- **Code:** All core source files can be found inside the `Code/` directory.
-- **Instructions:** Background story and tasks are detailed in **`assignment_final.pdf`**.
-- **Data:** Available for download here: https://cloud.fiw.fhws.de/s/LpYa2dCW85kwdNn
+- **Code:** Core source files are inside `Code/`.
+- **Instructions:** Full task details are in `assignment_final.pdf`.
+- **Data:** Available from https://cloud.fiw.fhws.de/s/LpYa2dCW85kwdNn
 
 ### Submission Guidelines
 
-- **Platform:** Submit your final deliverables via the official **e-learning platform**.
-- **Format:** Your submission must consist of a **direct link** to your created repository.
-- **Branch:** Ensure all your final, production-ready code, your `AUDIT_LOG.md`, and your `REPORT.md` are completely merged into the **`main`** branch before the cutoff.
-- **Deadline:** 09.07.2026, 23:59 (German Time). *Late submissions will not be processed.*
+- **Platform:** Submit final deliverables through the official e-learning platform.
+- **Format:** Submission must include a direct link to the repository.
+- **Branch:** Final code, `AUDIT_LOG.md`, and `REPORT.md` should be merged into the main branch before the cutoff.
+- **Deadline:** 09.07.2026, 23:59 German time.

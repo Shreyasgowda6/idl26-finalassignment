@@ -1,0 +1,13 @@
+dataset,model,epochs,checkpoint,accuracy,macro_precision,macro_recall,macro_f1,weighted_precision,weighted_recall,weighted_f1
+cells,AlexNet,20,checkpoints/cells_AlexNet.pth,96.1999,0.9640,0.9606,0.9617,0.9624,0.9620,0.9617
+cells,VGG16,20,checkpoints/cells_VGG16.pth,95.3230,0.9558,0.9470,0.9489,0.9563,0.9532,0.9528
+cells,ResNet18,20,checkpoints/cells_ResNet18.pth,97.1646,0.9720,0.9724,0.9719,0.9721,0.9716,0.9715
+chest,AlexNet,30,checkpoints/chest_AlexNet.pth,88.3013,0.9144,0.8466,0.8659,0.8975,0.8830,0.8779
+chest,VGG16,20,checkpoints/chest_VGG16.pth,88.1410,0.9135,0.8444,0.8639,0.8963,0.8814,0.8761
+chest,ResNet18,30,checkpoints/chest_ResNet18.pth,90.0641,0.9168,0.8744,0.8890,0.9066,0.9006,0.8980
+lesions,AlexNet,20,checkpoints/lesions_AlexNet.pth,75.2120,0.6026,0.5128,0.5172,0.7613,0.7521,0.7504
+lesions,VGG16,30,checkpoints/lesions_VGG16.pth,72.4190,0.4254,0.3624,0.3813,0.6867,0.7242,0.6975
+lesions,ResNet18,20,checkpoints/lesions_ResNet18.pth,76.6085,0.5763,0.4481,0.4834,0.7451,0.7661,0.7426
+orgs,AlexNet,20,checkpoints/orgs_AlexNet.pth,89.4596,0.8882,0.8815,0.8824,0.8983,0.8946,0.8949
+orgs,VGG16,20,checkpoints/orgs_VGG16.pth,90.0560,0.8940,0.8842,0.8857,0.9054,0.9006,0.9004
+orgs,ResNet18,20,checkpoints/orgs_ResNet18.pth,89.8004,0.8992,0.8887,0.8853,0.9086,0.8980,0.8950
