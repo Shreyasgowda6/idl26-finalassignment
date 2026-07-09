@@ -3,7 +3,7 @@
 | Name | Enrollment Number |
 |---|---|
 | Shreyas Hosadurga Sadananda | 10013494 |
-| Suhaim Manna | |
+| Suhaim Manna | 10012548 |
 
 
 ---
@@ -118,48 +118,81 @@ Future improvements for imbalanced datasets would include class-weighted loss, b
 
 ---
 
-## Part 2 — Green Initiative: MiniResNet vs ResNet18
+## Part 2 - Green Initiative: Full Efficiency Profiling
 
 ### Architecture
 
-MiniResNet is a lightweight ResNet-style architecture added specifically for the Green Initiative. Compared to ResNet18 it uses fewer initial channels (32 instead of 64) and only 3 residual stages (32-64-128) instead of 4 (64-128-256-512). This reduces parameter count by 93.8% — from 11.2M to 696K — while preserving the residual connection structure that makes ResNet architectures effective.
+MiniResNet is a lightweight ResNet-style architecture added specifically for the Green Initiative. Compared to ResNet18 it uses fewer initial channels (32 instead of 64) and only 3 residual stages (32-64-128) instead of 4 (64-128-256-512). This reduces parameter count by 93.8% - from about 11.2M parameters to about 696K - while preserving the residual connection structure that makes ResNet architectures effective.
 
-Both models were compared on all four datasets for 20 epochs using identical hyperparameters (Adam, lr=0.001, batch size 32, dropout 0.5). Best-validation checkpoints were used for test evaluation to avoid penalising runs where the final epoch was not the performance peak.
+The green profiling script was run across all four datasets and all four implemented models: AlexNet, VGG16, ResNet18, and MiniResNet. Each run used 20 epochs and logged best validation epoch, test accuracy, parameter count, model size, total training time, inference latency per sample, and peak GPU memory during training and inference.
 
-### Efficiency Results
+### Dataset-Wise Efficiency Results
 
-| Dataset | Model | Best Epoch | Test Accuracy | Parameters | Model Size | Train Time | Inference | Peak Train Mem | Peak Infer Mem |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| cells | ResNet18 | 20 | 97.87% | 11,172,936 | 42.66 MB | 546.78s | 0.6110 ms | 827.90 MB | 385.94 MB |
-| cells | MiniResNet | 19 | 97.69% | 696,360 | 2.67 MB | 181.41s | 0.1675 ms | 322.66 MB | 125.46 MB |
-| chest | ResNet18 | 19 | 87.50% | 11,168,706 | 42.64 MB | 204.98s | 0.6013 ms | 830.33 MB | 383.12 MB |
-| chest | MiniResNet | 17 | 94.39% | 695,010 | 2.66 MB | 68.89s | 0.1596 ms | 321.26 MB | 124.44 MB |
-| lesions | ResNet18 | 19 | 76.91% | 11,172,423 | 42.66 MB | 319.83s | 0.6028 ms | 827.52 MB | 383.56 MB |
-| lesions | MiniResNet | 20 | 76.91% | 696,231 | 2.66 MB | 106.13s | 0.1615 ms | 322.65 MB | 125.46 MB |
-| orgs | ResNet18 | 18 | 92.20% | 11,173,323 | 42.66 MB | 593.78s | 0.6123 ms | 827.79 MB | 382.07 MB |
-| orgs | MiniResNet | 18 | 92.47% | 696,171 | 2.66 MB | 202.06s | 0.1616 ms | 321.28 MB | 124.46 MB |
+#### cells
 
-### Efficiency Summary
+| Model | Best Epoch | Test Accuracy | Parameters | Model Size | Train Time | Inference | Peak Train Mem | Peak Infer Mem |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| AlexNet | 19 | 96.35% | 5,693,544 | 21.72 MB | 54.63s | 0.0539 ms | 187.31 MB | 129.14 MB |
+| VGG16 | 20 | 95.79% | 15,253,064 | 58.22 MB | 314.47s | 0.3666 ms | 685.77 MB | 383.56 MB |
+| ResNet18 | 20 | 97.87% | 11,172,936 | 42.66 MB | 546.78s | 0.6110 ms | 827.90 MB | 385.94 MB |
+| MiniResNet | 19 | 97.69% | 696,360 | 2.67 MB | 181.41s | 0.1675 ms | 322.66 MB | 125.46 MB |
 
-| Metric | ResNet18 (avg) | MiniResNet (avg) | Reduction |
-|---|---:|---:|---:|
-| Parameters | ~11.2M | ~696K | 93.8% fewer |
-| Model size | ~42.65 MB | ~2.66 MB | 93.8% smaller |
-| Training time | ~416s | ~140s | ~66% faster |
-| Inference latency | ~0.609 ms | ~0.163 ms | ~73% faster |
-| Peak train memory | ~828 MB | ~322 MB | ~61% less |
-| Peak infer memory | ~384 MB | ~125 MB | ~67% less |
+On cells, ResNet18 produced the highest accuracy, but MiniResNet was almost identical while being much smaller and faster. AlexNet was the quickest model, although MiniResNet gives a better balance between accuracy and compactness.
+
+#### chest
+
+| Model | Best Epoch | Test Accuracy | Parameters | Model Size | Train Time | Inference | Peak Train Mem | Peak Infer Mem |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| AlexNet | 15 | 90.38% | 5,682,690 | 21.68 MB | 19.19s | 0.0463 ms | 186.50 MB | 129.41 MB |
+| VGG16 | 16 | 86.54% | 15,248,834 | 58.20 MB | 119.41s | 0.3603 ms | 683.16 MB | 382.49 MB |
+| ResNet18 | 19 | 87.50% | 11,168,706 | 42.64 MB | 204.98s | 0.6013 ms | 830.33 MB | 383.12 MB |
+| MiniResNet | 17 | 94.39% | 695,010 | 2.66 MB | 68.89s | 0.1596 ms | 321.26 MB | 124.44 MB |
+
+On chest, MiniResNet gave the strongest result in the green-profile run. This dataset also showed some run-to-run instability during earlier experiments, so the exact ordering should be interpreted cautiously. Still, the result is useful: the smaller model is clearly capable of handling the binary chest task with far less memory and model size than ResNet18 or VGG16.
+
+#### lesions
+
+| Model | Best Epoch | Test Accuracy | Parameters | Model Size | Train Time | Inference | Peak Train Mem | Peak Infer Mem |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| AlexNet | 17 | 74.02% | 5,692,519 | 21.72 MB | 37.83s | 0.1027 ms | 186.92 MB | 130.62 MB |
+| VGG16 | 15 | 69.78% | 15,252,551 | 58.22 MB | 194.30s | 0.3767 ms | 682.26 MB | 383.24 MB |
+| ResNet18 | 19 | 76.91% | 11,172,423 | 42.66 MB | 319.83s | 0.6028 ms | 827.52 MB | 383.56 MB |
+| MiniResNet | 20 | 76.91% | 696,231 | 2.66 MB | 106.13s | 0.1615 ms | 322.65 MB | 125.46 MB |
+
+Lesions is the hardest dataset because of class imbalance and subtle visual differences between classes. ResNet18 and MiniResNet reached the same test accuracy, which is a strong result for the smaller model. VGG16 was both heavier and less accurate here, making it the weakest green choice for this dataset.
+
+#### orgs
+
+| Model | Best Epoch | Test Accuracy | Parameters | Model Size | Train Time | Inference | Peak Train Mem | Peak Infer Mem |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| AlexNet | 19 | 90.12% | 5,691,915 | 21.71 MB | 81.30s | 0.0757 ms | 186.67 MB | 130.74 MB |
+| VGG16 | 13 | 89.63% | 15,253,451 | 58.22 MB | 361.91s | 0.3685 ms | 683.97 MB | 382.43 MB |
+| ResNet18 | 18 | 92.20% | 11,173,323 | 42.66 MB | 593.78s | 0.6123 ms | 827.79 MB | 382.07 MB |
+| MiniResNet | 18 | 92.47% | 696,171 | 2.66 MB | 202.06s | 0.1616 ms | 321.28 MB | 124.46 MB |
+
+On orgs, MiniResNet slightly outperformed ResNet18 while using a fraction of the parameters and memory. This is the clearest example that the smaller architecture can preserve accuracy on a larger multi-class dataset while being much more practical to deploy.
+
+### Average Efficiency Summary
+
+| Model | Avg Accuracy | Avg Parameters | Avg Model Size | Avg Train Time | Avg Inference | Avg Peak Train Mem |
+|---|---:|---:|---:|---:|---:|---:|
+| AlexNet | 87.72% | 5.69M | 21.71 MB | 48.24s | 0.0697 ms | 186.85 MB |
+| VGG16 | 85.43% | 15.25M | 58.21 MB | 247.52s | 0.3680 ms | 683.79 MB |
+| ResNet18 | 88.62% | 11.17M | 42.65 MB | 416.34s | 0.6069 ms | 828.39 MB |
+| MiniResNet | 90.36% | 0.70M | 2.66 MB | 139.62s | 0.1626 ms | 321.96 MB |
 
 ### Green Initiative Analysis
 
-MiniResNet delivers a compelling efficiency-accuracy tradeoff across all four datasets:
+The dataset-wise results show that no single architecture is best at everything. AlexNet is the fastest model and uses the least training memory, but its accuracy is weaker on lesions and it does not give the strongest overall accuracy. VGG16 is the least efficient model in this project: it has the largest model file, high memory usage, and slower training, without providing the best accuracy. ResNet18 remains a strong baseline, but it is the most expensive model during training and inference.
 
-- **cells** - MiniResNet (97.69%) was only 0.18 percentage points below ResNet18 (97.87%) while using 93.8% fewer parameters and running 3× faster.
+MiniResNet gives the best overall green trade-off. It has the smallest model size, far fewer parameters, much lower memory usage than ResNet18 and VGG16, and competitive or better accuracy across the four green-profile runs:
+
+- **cells** - MiniResNet (97.69%) was only 0.18 percentage points below ResNet18 (97.87%) while using 93.8% fewer parameters and running about 3x faster.
 - **chest** - MiniResNet (94.39%) actually exceeded ResNet18 (87.50%) in this green-profile run, demonstrating that the smaller model can match or exceed the larger one on simpler binary-class datasets.
 - **lesions** - Both models achieved identical test accuracy (76.91%), confirming MiniResNet can match ResNet18 even on the most difficult and imbalanced dataset in the benchmark.
 - **orgs** - MiniResNet (92.47%) slightly exceeded ResNet18 (92.20%), again showing no accuracy penalty from the architectural reduction.
 
-Across all four comparisons MiniResNet preserved comparable or superior accuracy while operating at approximately one third of the training time, one quarter of the inference latency, and roughly 60% of the memory footprint. For deployment on diagnostic devices with limited compute, embedded systems, edge devices, or energy-constrained hospital infrastructure, MiniResNet is the recommended architecture. The 93.8% reduction in parameters alone represents a major reduction in energy consumption per inference cycle.
+Across the four direct ResNet18-vs-MiniResNet comparisons, MiniResNet reduced the model size by 93.8%, cut average training time by about 66%, reduced average inference latency by about 73%, and used roughly 61% less peak training memory. For deployment on diagnostic devices with limited compute, embedded systems, edge devices, or energy-constrained hospital infrastructure, MiniResNet is the recommended green architecture.
 
 ---
 

@@ -5,15 +5,18 @@
 | Name | Enrollment Number |
 |---|---|
 | Shreyas Hosadurga Sadananda | 10013494 |
-| Suhaim Manna |  |
+| Suhaim Manna | 10012548 |
 
-Repository:  https://github.com/Shreyasgowda6/idl26-finalassignment | https://github.com/suhaimz11/idl26-finalassignment
+Repositories:
+
+- https://github.com/Shreyasgowda6/idl26-finalassignment
+- https://github.com/suhaimz11/idl26-finalassignment
 
 ---
 
-## Project Summary
+## Overview
 
-This repository contains the completed final assignment for Introduction to Deep Learning (IDL) 2026. The project repairs and extends a recovered medical image classification pipeline. The final code supports training, evaluation, benchmarking, green model profiling, and transfer learning.
+This repository contains the completed final assignment for Introduction to Deep Learning (IDL) 2026. The project restores a broken medical image classification pipeline and extends it with full benchmarking, green-model profiling, and transfer learning for a scarce-data setting.
 
 The main benchmark evaluates **AlexNet**, **VGG16**, and **ResNet18** on four medical imaging datasets:
 
@@ -24,8 +27,8 @@ The main benchmark evaluates **AlexNet**, **VGG16**, and **ResNet18** on four me
 
 The project also includes:
 
-- an efficient **MiniResNet** model for the Green Initiative analysis
-- transfer learning from `orgs` to the scarce `organs` dataset
+- an efficient **MiniResNet** model and full green-efficiency profiling for the Green Initiative analysis
+- transfer learning from `orgs` to the smaller `organs` dataset
 - CSV logging for benchmark, evaluation, green-profile, and transfer-learning results
 
 ---
@@ -36,23 +39,23 @@ The project also includes:
 idl26-finalassignment/
 |
 |-- Code/
-|   |-- data.py                 # Dataset loading and train/val/test splitting
+|   |-- data.py                 # Dataset loading and train/validation/test splitting
 |   |-- fit.py                  # Trainer class and training loop
 |   |-- models.py               # AlexNet, VGG16, ResNet18, MiniResNet
 |   |-- train.py                # Single-run training entry point
-|   |-- train_all.py            # Runs all dataset/model benchmark configs
-|   |-- evaluate.py             # Evaluates checkpoints and saves CSV metrics
-|   |-- green_profile.py        # Part 2 green-model profiling
-|   |-- transfer_learning.py    # Part 3 scarce-data transfer learning
-|   |-- config.json             # Single-run config
-|   |-- config_all.json         # Full benchmark config
+|   |-- train_all.py            # Full benchmark runner
+|   |-- evaluate.py             # Checkpoint evaluation and CSV logging
+|   |-- green_profile.py        # Green-model profiling for Part 2
+|   |-- transfer_learning.py    # Scarce-data transfer learning for Part 3
+|   |-- config.json             # Single-run configuration
+|   |-- config_all.json         # Full benchmark configuration
 |
 |-- data/                       # Dataset .pt files, not committed
-|-- outputs/                    # Generated CSV result files, not committed
-|-- AUDIT_LOG.md                # Bug audit and fixes
+|-- outputs/                    # Generated CSV result files
+|-- AUDIT_LOG.md                # Bug audit and implemented fixes
 |-- REPORT.md                   # Benchmark, green-model, and transfer-learning report
-|-- assignment_final.pdf        # Original assignment description
-|-- README.md                   # This file
+|-- assignment_final.pdf        # Assignment description
+|-- README.md                   # Project documentation
 ```
 
 ---
@@ -78,7 +81,7 @@ Install dependencies:
 pip install torch torchvision numpy scikit-learn
 ```
 
-For CUDA GPU support, install a CUDA-enabled PyTorch build appropriate for the local GPU and Python version.
+For CUDA GPU support, install a CUDA-enabled PyTorch build that matches the local GPU, driver, and Python version.
 
 ---
 
@@ -99,7 +102,7 @@ data/
 |-- organs.pt
 ```
 
-The expected dataset metadata is:
+Dataset configuration used by the pipeline:
 
 | Dataset | Channels | Classes |
 |---|---:|---:|
@@ -169,7 +172,7 @@ outputs/benchmark_results.csv
 python green_profile.py
 ```
 
-This compares ResNet18 and MiniResNet across all four main datasets and writes:
+This profiles AlexNet, VGG16, ResNet18, and MiniResNet across the four main datasets and writes:
 
 ```text
 outputs/green_profile_results.csv
@@ -181,7 +184,7 @@ outputs/green_profile_results.csv
 python transfer_learning.py
 ```
 
-This compares scratch training against transfer learning from the larger `orgs` checkpoint to the smaller `organs` dataset and writes:
+This compares training from scratch against transfer learning from the larger `orgs` checkpoint to the smaller `organs` dataset and writes:
 
 ```text
 outputs/transfer_learning_results.csv
@@ -198,7 +201,20 @@ outputs/transfer_learning_results.csv
 | lesions | ResNet18 | 76.61% | 0.4834 | 67% | Yes |
 | orgs | VGG16 | 90.06% | 0.8857 | 83% | Yes |
 
-All 12 main benchmark runs passed the required target accuracies. Full benchmark details, green-model analysis, and transfer-learning analysis are available in [REPORT.md](REPORT.md).
+All 12 main benchmark runs passed the required target accuracies. The detailed benchmark discussion, dataset-wise green profiling, and transfer-learning analysis are available in [REPORT.md](REPORT.md).
+
+---
+
+## Codebase Fix Summary
+
+| File | Main Work Completed |
+|---|---|
+| `data.py` | Corrected dataset file loading and fixed the train/validation split so validation samples are not included in training. |
+| `models.py` | Fixed model architecture issues in VGGBlock, AlexNet, VGG16, and ResNet18 so all models work across the required datasets. Added MiniResNet for the Green Initiative analysis. |
+| `train.py` | Rebuilt the training entry point around `config.json`, proper device selection, configurable dropout, and checkpoint saving. |
+| `fit.py` | Fixed the training loop by resetting gradients each batch and using correctly shaped labels for `CrossEntropyLoss`. |
+
+Detailed bug descriptions, root causes, and implemented corrections are documented in [AUDIT_LOG.md](AUDIT_LOG.md).
 
 ---
 
@@ -206,27 +222,13 @@ All 12 main benchmark runs passed the required target accuracies. Full benchmark
 
 | File | Purpose |
 |---|---|
-| `AUDIT_LOG.md` | Documents discovered bugs, root causes, fixes, and commit hashes |
+| `AUDIT_LOG.md` | Documents discovered bugs, root causes, fixes, and related commits |
 | `REPORT.md` | Contains benchmark results, recommendations, Green Initiative analysis, and transfer-learning analysis |
 | `Code/` | Contains the corrected and extended training/evaluation pipeline |
+| `outputs/` | Contains generated CSV result files used for the report |
 
 ---
 
-## Original Assignment Information
+## Assignment Context
 
-Welcome to the official repository template for the **Introduction to Deep Learning (IDL) 2026 Final Assignment**.
-
-### Overview
-
-This repository contains the volatile, recovered remnants of a broken machine learning pipeline. The assignment requires auditing the codebase, stabilizing the system, optimizing its computational footprint, and deploying models across all target datasets.
-
-- **Code:** Core source files are inside `Code/`.
-- **Instructions:** Full task details are in `assignment_final.pdf`.
-- **Data:** Available from https://cloud.fiw.fhws.de/s/LpYa2dCW85kwdNn
-
-### Submission Guidelines
-
-- **Platform:** Submit final deliverables through the official e-learning platform.
-- **Format:** Submission must include a direct link to the repository.
-- **Branch:** Final code, `AUDIT_LOG.md`, and `REPORT.md` should be merged into the main branch before the cutoff.
-- **Deadline:** 09.07.2026, 23:59 German time.
+This repository is based on the official IDL 2026 final assignment template. The original recovered pipeline was incomplete and unstable, and the assignment required restoring the codebase, documenting the incident audit, benchmarking all dataset/model combinations, adding an efficient model for the Green Initiative, and evaluating transfer learning for the scarce `organs` dataset.
