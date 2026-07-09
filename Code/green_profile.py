@@ -21,6 +21,20 @@ from data import get_loaders
 RUNS = [
     {
         "DATA": "cells",
+        "MODEL": "AlexNet",
+        "CHANNELS": 3,
+        "NUM_CLASSES": 8,
+        "EPOCHS": 20,
+    },
+    {
+        "DATA": "cells",
+        "MODEL": "VGG16",
+        "CHANNELS": 3,
+        "NUM_CLASSES": 8,
+        "EPOCHS": 20,
+    },
+    {
+        "DATA": "cells",
         "MODEL": "ResNet18",
         "CHANNELS": 3,
         "NUM_CLASSES": 8,
@@ -35,6 +49,20 @@ RUNS = [
     },
     {
         "DATA": "chest",
+        "MODEL": "AlexNet",
+        "CHANNELS": 1,
+        "NUM_CLASSES": 2,
+        "EPOCHS": 20,
+    },
+    {
+        "DATA": "chest",
+        "MODEL": "VGG16",
+        "CHANNELS": 1,
+        "NUM_CLASSES": 2,
+        "EPOCHS": 20,
+    },
+    {
+        "DATA": "chest",
         "MODEL": "ResNet18",
         "CHANNELS": 1,
         "NUM_CLASSES": 2,
@@ -49,6 +77,20 @@ RUNS = [
     },
     {
         "DATA": "lesions",
+        "MODEL": "AlexNet",
+        "CHANNELS": 3,
+        "NUM_CLASSES": 7,
+        "EPOCHS": 20,
+    },
+    {
+        "DATA": "lesions",
+        "MODEL": "VGG16",
+        "CHANNELS": 3,
+        "NUM_CLASSES": 7,
+        "EPOCHS": 20,
+    },
+    {
+        "DATA": "lesions",
         "MODEL": "ResNet18",
         "CHANNELS": 3,
         "NUM_CLASSES": 7,
@@ -59,6 +101,20 @@ RUNS = [
         "MODEL": "MiniResNet",
         "CHANNELS": 3,
         "NUM_CLASSES": 7,
+        "EPOCHS": 20,
+    },
+    {
+        "DATA": "orgs",
+        "MODEL": "AlexNet",
+        "CHANNELS": 1,
+        "NUM_CLASSES": 11,
+        "EPOCHS": 20,
+    },
+    {
+        "DATA": "orgs",
+        "MODEL": "VGG16",
+        "CHANNELS": 1,
+        "NUM_CLASSES": 11,
         "EPOCHS": 20,
     },
     {
