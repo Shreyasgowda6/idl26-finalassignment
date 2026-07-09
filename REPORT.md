@@ -131,7 +131,7 @@ The green profiling script was run across all four datasets and all four impleme
 #### cells
 
 | Model | Best Epoch | Test Accuracy | Parameters | Model Size | Train Time | Inference | Peak Train Mem | Peak Infer Mem |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
 | AlexNet | 19 | 96.35% | 5,693,544 | 21.72 MB | 54.63s | 0.0539 ms | 187.31 MB | 129.14 MB |
 | VGG16 | 20 | 95.79% | 15,253,064 | 58.22 MB | 314.47s | 0.3666 ms | 685.77 MB | 383.56 MB |
 | ResNet18 | 20 | 97.87% | 11,172,936 | 42.66 MB | 546.78s | 0.6110 ms | 827.90 MB | 385.94 MB |
@@ -142,7 +142,7 @@ On cells, ResNet18 produced the highest accuracy, but MiniResNet was almost iden
 #### chest
 
 | Model | Best Epoch | Test Accuracy | Parameters | Model Size | Train Time | Inference | Peak Train Mem | Peak Infer Mem |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
 | AlexNet | 15 | 90.38% | 5,682,690 | 21.68 MB | 19.19s | 0.0463 ms | 186.50 MB | 129.41 MB |
 | VGG16 | 16 | 86.54% | 15,248,834 | 58.20 MB | 119.41s | 0.3603 ms | 683.16 MB | 382.49 MB |
 | ResNet18 | 19 | 87.50% | 11,168,706 | 42.64 MB | 204.98s | 0.6013 ms | 830.33 MB | 383.12 MB |
@@ -153,7 +153,7 @@ On chest, MiniResNet gave the strongest result in the green-profile run. This da
 #### lesions
 
 | Model | Best Epoch | Test Accuracy | Parameters | Model Size | Train Time | Inference | Peak Train Mem | Peak Infer Mem |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
 | AlexNet | 17 | 74.02% | 5,692,519 | 21.72 MB | 37.83s | 0.1027 ms | 186.92 MB | 130.62 MB |
 | VGG16 | 15 | 69.78% | 15,252,551 | 58.22 MB | 194.30s | 0.3767 ms | 682.26 MB | 383.24 MB |
 | ResNet18 | 19 | 76.91% | 11,172,423 | 42.66 MB | 319.83s | 0.6028 ms | 827.52 MB | 383.56 MB |
@@ -164,7 +164,7 @@ Lesions is the hardest dataset because of class imbalance and subtle visual diff
 #### orgs
 
 | Model | Best Epoch | Test Accuracy | Parameters | Model Size | Train Time | Inference | Peak Train Mem | Peak Infer Mem |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
 | AlexNet | 19 | 90.12% | 5,691,915 | 21.71 MB | 81.30s | 0.0757 ms | 186.67 MB | 130.74 MB |
 | VGG16 | 13 | 89.63% | 15,253,451 | 58.22 MB | 361.91s | 0.3685 ms | 683.97 MB | 382.43 MB |
 | ResNet18 | 18 | 92.20% | 11,173,323 | 42.66 MB | 593.78s | 0.6123 ms | 827.79 MB | 382.07 MB |
