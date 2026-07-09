@@ -16,7 +16,7 @@ Repositories:
 
 ## Overview
 
-This repository contains the completed final assignment for Introduction to Deep Learning (IDL) 2026. The project restores a broken medical image classification pipeline and extends it with benchmarking, green-model profiling, and transfer learning for a scarce-data setting.
+This repository contains the completed final assignment for Introduction to Deep Learning (IDL) 2026. The project restores a broken medical image classification pipeline and extends it with full benchmarking, green-model profiling, and transfer learning for a scarce-data setting.
 
 The main benchmark evaluates **AlexNet**, **VGG16**, and **ResNet18** on four medical imaging datasets:
 
@@ -27,7 +27,7 @@ The main benchmark evaluates **AlexNet**, **VGG16**, and **ResNet18** on four me
 
 The project also includes:
 
-- an efficient **MiniResNet** model for the Green Initiative analysis
+- an efficient **MiniResNet** model and full green-efficiency profiling for the Green Initiative analysis
 - transfer learning from `orgs` to the smaller `organs` dataset
 - CSV logging for benchmark, evaluation, green-profile, and transfer-learning results
 
@@ -172,7 +172,7 @@ outputs/benchmark_results.csv
 python green_profile.py
 ```
 
-This compares ResNet18 and MiniResNet across the four main datasets and writes:
+This profiles AlexNet, VGG16, ResNet18, and MiniResNet across the four main datasets and writes:
 
 ```text
 outputs/green_profile_results.csv
@@ -201,7 +201,7 @@ outputs/transfer_learning_results.csv
 | lesions | ResNet18 | 76.61% | 0.4834 | 67% | Yes |
 | orgs | VGG16 | 90.06% | 0.8857 | 83% | Yes |
 
-All 12 main benchmark runs passed the required target accuracies. Full benchmark details, green-model analysis, and transfer-learning analysis are available in [REPORT.md](REPORT.md).
+All 12 main benchmark runs passed the required target accuracies. The detailed benchmark discussion, dataset-wise green profiling, and transfer-learning analysis are available in [REPORT.md](REPORT.md).
 
 ---
 
