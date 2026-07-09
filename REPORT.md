@@ -15,7 +15,7 @@ This report presents the full benchmark results for the restored medical image c
 The report covers three parts:
 - **Part 1** — Full benchmark across all 12 dataset/model combinations
 - **Part 2** — Green Initiative: MiniResNet efficiency comparison against ResNet18
-- **Part 3** — Transfer learning on the scarce `organs` dataset
+- **Part 3** — Transfer learning on the scarce organs dataset
 
 ---
 
@@ -23,7 +23,7 @@ The report covers three parts:
 
 ### How We Arrived at the Final Epoch Counts
 
-We did not start at 20 epochs. The first full benchmark run used 10 epochs for all 12 combinations — the quickest way to get an end-to-end picture of how all three models behaved across all four datasets.
+We did not start at 20 epochs. The first full benchmark run used 10 epochs for all 12 combinations, the quickest way to get an end-to-end picture of how all three models behaved across all four datasets.
 
 #### What Happened at 10 Epochs
 
@@ -71,19 +71,19 @@ All 12 final benchmark runs exceeded the required test accuracy thresholds.
 
 ### Per-Dataset Analysis
 
-#### cells (RGB, 64×64, 8 classes — train: 13,671 / test: 3,421)
+#### cells (RGB, 64×64, 8 classes - train: 13,671 / test: 3,421)
 
 All three models exceeded 95% accuracy. ResNet18 achieved the best result at 97.16% accuracy and 0.9719 macro F1, showing the strongest balance across all 8 classes. AlexNet was highly competitive at 96.20%, while VGG16 reached 95.32%. The dataset is well balanced which contributed to uniformly strong performance across all models.
 
-**Recommended model: ResNet18** — best accuracy and macro F1.
+**Recommended model: ResNet18** - best accuracy and macro F1.
 
 #### chest (Grayscale, 64×64, 2 classes — train: 5,232 / test: 624)
 
-All three models passed the 87% target. ResNet18 achieved 90.06% after 30 epochs. AlexNet also required 30 epochs to produce a stable result, reaching 88.30%. VGG16 passed at 20 epochs with 88.14%. The main challenge was improving recall for the minority class (class 0) while maintaining strong class 1 performance — ResNet18 handled this tradeoff best.
+All three models passed the 87% target. ResNet18 achieved 90.06% after 30 epochs. AlexNet also required 30 epochs to produce a stable result, reaching 88.30%. VGG16 passed at 20 epochs with 88.14%. The main challenge was improving recall for the minority class (class 0) while maintaining strong class 1 performance, ResNet18 handled this tradeoff best.
 
-**Recommended model: ResNet18** — highest accuracy and macro F1 on chest.
+**Recommended model: ResNet18** - highest accuracy and macro F1 on chest.
 
-#### lesions (RGB, 64×64, 7 classes — train: 8,010 / test: 2,005)
+#### lesions (RGB, 64×64, 7 classes - train: 8,010 / test: 2,005)
 
 This was the hardest dataset. All models passed the 67% accuracy target but macro F1 scores were much lower than accuracy due to severe class imbalance, class 5 accounts for 67% of all test samples (1,341 of 2,005) while class 3 has only 23 samples. Models learned to predict class 5 reliably but struggled with minority classes. ResNet18 achieved the best accuracy (76.61%) while AlexNet achieved the best macro F1 (0.5172).
 
@@ -148,7 +148,7 @@ On cells, ResNet18 produced the highest accuracy, but MiniResNet was almost iden
 | ResNet18 | 19 | 87.50% | 11,168,706 | 42.64 MB | 204.98s | 0.6013 ms | 830.33 MB | 383.12 MB |
 | MiniResNet | 17 | 94.39% | 695,010 | 2.66 MB | 68.89s | 0.1596 ms | 321.26 MB | 124.44 MB |
 
-On chest, MiniResNet gave the strongest result in the green-profile run. This dataset also showed some run-to-run instability during earlier experiments, so the exact ordering should be interpreted cautiously. Still, the result is useful: the smaller model is clearly capable of handling the binary chest task with far less memory and model size than ResNet18 or VGG16.
+On chest, MiniResNet gave the strongest result in the green-profile run. This dataset also showed some run-to-run instability during earlier experiments, so the exact ordering should be interpreted cautiously. Still, the result is useful the smaller model is clearly capable of handling the binary chest task with far less memory and model size than ResNet18 or VGG16.
 
 #### lesions
 
@@ -206,9 +206,9 @@ The organs dataset contains only 500 training images across 11 classes (~45 per 
 
 We compared two approaches using ResNet18:
 
-**From scratch** — random weight initialisation, trained on organs for 20 epochs with lr=0.001.
+**From scratch**: random weight initialisation, trained on organs for 20 epochs with lr=0.001.
 
-**Transfer learning** — backbone weights loaded from the pretrained orgs_ResNet18.pth checkpoint (trained on 15,367 organ images, 89.80% test accuracy). Only the backbone feature layers were transferred — the classifier head was reinitialized for the organs task. Fine-tuning used lr=0.0001 (10× lower than scratch) to preserve the pretrained feature representations while adapting to the new data distribution. The lower learning rate prevents overwriting the useful knowledge from the larger dataset with noise from only 500 samples.
+**Transfer learning**: backbone weights loaded from the pretrained orgs_ResNet18.pth checkpoint (trained on 15,367 organ images, 89.80% test accuracy). Only the backbone feature layers were transferred, the classifier head was reinitialized for the organs task. Fine-tuning used lr=0.0001 (10× lower than scratch) to preserve the pretrained feature representations while adapting to the new data distribution. The lower learning rate prevents overwriting the useful knowledge from the larger dataset with noise from only 500 samples.
 
 Best-validation checkpoints were used for both approaches to reduce the effect of last-epoch instability on the small dataset.
 

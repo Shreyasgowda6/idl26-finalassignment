@@ -16,12 +16,12 @@ from models import ResNet18
 
 DATASET      = "organs"
 DATA_PATH    = "../data"
-BATCH_SIZE   = 16       # smaller batch — tiny dataset
+BATCH_SIZE   = 16       
 CHANNELS     = 1
 NUM_CLASSES  = 11
-EPOCHS       = 20       # more epochs since dataset is tiny
+EPOCHS       = 20       
 LR_SCRATCH   = 0.001
-LR_FINETUNE  = 0.0001   # lower LR for fine-tuning -- don't overwrite pretrained weights too fast
+LR_FINETUNE  = 0.0001   
 PRETRAINED   = "checkpoints/orgs_ResNet18.pth"
 
 device = torch.device(

@@ -6,7 +6,7 @@ MG 6/6/2026
 import torch
 import torch.nn as nn
 
-activation_str = "ReLU" # "Identity"  # Placeholder for activation function, can be replaced with "ReLU" or others as needed.
+activation_str = "ReLU" 
 
 
 class VGGBlock(nn.Module):
@@ -24,8 +24,7 @@ class VGGBlock(nn.Module):
             layers.append(nn.Conv2d(current_in_channels, out_channels, kernel_size=kernel_size, padding=padding))
             layers.append(nn.BatchNorm2d(out_channels))
             layers.append(nn.ReLU(inplace=True))
-            # current_in_channels was never updated here (BUG)
-            current_in_channels = out_channels  # FIXED: subsequent convs in this block must take out_channels as input
+            current_in_channels = out_channels 
             
         layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
         self.block = nn.Sequential(*layers)
@@ -45,7 +44,6 @@ class ResBlock(nn.Module):
         self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn2 = nn.BatchNorm2d(out_channels)
 
-        # If spatial size shrinks (stride > 1) or channels change, adjust the shortcut
         self.shortcut = nn.Identity()
         if stride != 1 or in_channels != out_channels:
             self.shortcut = nn.Sequential(
@@ -64,15 +62,13 @@ class ResBlock(nn.Module):
 
 class AlexNet(nn.Module):
     """AlexNet (Krizhevsky et al., 2012) adapted for smaller inputs."""
-    # def __init__(self, **kwargs):
-    def __init__(self, in_channels, num_classes, **kwargs):  # FIXED: in_channels/num_classes were missing as parameters
+    def __init__(self, in_channels, num_classes, **kwargs):  
         super().__init__()
 
         drop_rate = kwargs.get("drop_rate", 0.5)
         
         self.features = nn.Sequential(
-            # nn.Conv2d(3, 48, kernel_size=7, stride=2, padding=3),
-            nn.Conv2d(in_channels, 48, kernel_size=7, stride=2, padding=3),  # FIXED: was hardcoded 3 (RGB only)
+            nn.Conv2d(in_channels, 48, kernel_size=7, stride=2, padding=3),  
             nn.BatchNorm2d(48),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
@@ -93,14 +89,13 @@ class AlexNet(nn.Module):
         
         self.classifier = nn.Sequential(
             nn.Dropout(p=drop_rate),
-            # nn.Linear(2048, 1024),
-            nn.Linear(3072, 1024),  # FIXED: real flattened size for 64x64 input is 192*4*4=3072, not 2048
+            nn.Linear(3072, 1024),  
             nn.ReLU(inplace=True),
             nn.Dropout(p=drop_rate),
             nn.Linear(1024, 1024),
             nn.ReLU(inplace=True),
             # nn.Linear(1024, 11),
-            nn.Linear(1024, num_classes),  # FIXED: was hardcoded 11, only correct for orgs/organs
+            nn.Linear(1024, num_classes), 
         )
 
     def forward(self, x):
@@ -125,8 +120,7 @@ class VGG16(nn.Module):
         )
         
         self.classifier = nn.Sequential(
-            # nn.Linear(2048, 1024),
-            nn.Linear(4608, 1024),  # FIXED: real flattened size for 64x64 input is 192*4*4=4608, not 2048
+            nn.Linear(4608, 1024),  
             nn.ReLU(inplace=True),
             nn.Dropout(p=drop_rate),
             nn.Linear(1024, 512),
@@ -189,14 +183,7 @@ class ResNet18(nn.Module):
 
 
 class MiniResNet(nn.Module):
-    """Lightweight ResNet variant for the Green/Efficient model (Part 2).
     
-    Compared to ResNet18:
-    - Fewer initial channels (32 instead of 64)
-    - Only 3 stages instead of 4 (32->64->128 instead of 64->128->256->512)
-    - ~10x fewer parameters (~1.2M vs ~11M)
-    - Faster training and inference, lower memory usage
-    """
     def __init__(self, in_channels, num_classes, **kwargs):
         super().__init__()
 

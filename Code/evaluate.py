@@ -95,14 +95,13 @@ def evaluate_one(config, device):
     print(f"Loaded weights from {checkpoint_path}")
     print("-" * 50)
 
-    # Run inference on the full test set
     all_preds = []
     all_labels = []
 
     with torch.no_grad():
         for images, labels in test_loader:
             images = images.to(device)
-            labels = labels.squeeze(1)  # (N, 1) -> (N,)
+            labels = labels.squeeze(1)  
 
             outputs = model(images)
             _, predicted = outputs.max(1)
@@ -110,7 +109,6 @@ def evaluate_one(config, device):
             all_preds.extend(predicted.cpu().tolist())
             all_labels.extend(labels.tolist())
 
-    # Compute and print metrics
     accuracy = accuracy_score(all_labels, all_preds) * 100
     report = classification_report(
         all_labels,

@@ -8,7 +8,7 @@
         "NUM_CLASSES": 8,
         "DROP_RATE": 0.5,
         "LEARNING_RATE": 0.001,
-        "EPOCHS": 10
+        "EPOCHS": 20
     },
     {
         "DATA": "cells",
@@ -19,7 +19,7 @@
         "NUM_CLASSES": 8,
         "DROP_RATE": 0.5,
         "LEARNING_RATE": 0.001,
-        "EPOCHS": 10
+        "EPOCHS": 20
     },
     {
         "DATA": "cells",
@@ -30,7 +30,7 @@
         "NUM_CLASSES": 8,
         "DROP_RATE": 0.5,
         "LEARNING_RATE": 0.001,
-        "EPOCHS": 10
+        "EPOCHS": 20
     },
     {
         "DATA": "chest",
@@ -41,6 +41,94 @@
         "NUM_CLASSES": 2,
         "DROP_RATE": 0.5,
         "LEARNING_RATE": 0.001,
-        "EPOCHS": 10
+        "EPOCHS": 30
+    },
+    {
+        "DATA": "chest",
+        "DATA_PATH": "data",
+        "BATCH_SIZE": 32,
+        "MODEL": "VGG16",
+        "CHANNELS": 1,
+        "NUM_CLASSES": 2,
+        "DROP_RATE": 0.5,
+        "LEARNING_RATE": 0.001,
+        "EPOCHS": 20
+    },
+    {
+        "DATA": "chest",
+        "DATA_PATH": "data",
+        "BATCH_SIZE": 32,
+        "MODEL": "AlexNet",
+        "CHANNELS": 1,
+        "NUM_CLASSES": 2,
+        "DROP_RATE": 0.5,
+        "LEARNING_RATE": 0.001,
+        "EPOCHS": 30
+    },
+    {
+        "DATA": "lesions",
+        "DATA_PATH": "data",
+        "BATCH_SIZE": 32,
+        "MODEL": "ResNet18",
+        "CHANNELS": 3,
+        "NUM_CLASSES": 7,
+        "DROP_RATE": 0.5,
+        "LEARNING_RATE": 0.001,
+        "EPOCHS": 20
+    },
+    {
+        "DATA": "lesions",
+        "DATA_PATH": "data",
+        "BATCH_SIZE": 32,
+        "MODEL": "VGG16",
+        "CHANNELS": 3,
+        "NUM_CLASSES": 7,
+        "DROP_RATE": 0.5,
+        "LEARNING_RATE": 0.001,
+        "EPOCHS": 30
+    },
+    {
+        "DATA": "lesions",
+        "DATA_PATH": "data",
+        "BATCH_SIZE": 32,
+        "MODEL": "AlexNet",
+        "CHANNELS": 3,
+        "NUM_CLASSES": 7,
+        "DROP_RATE": 0.5,
+        "LEARNING_RATE": 0.001,
+        "EPOCHS": 20
+    },
+    {
+        "DATA": "orgs",
+        "DATA_PATH": "data",
+        "BATCH_SIZE": 32,
+        "MODEL": "ResNet18",
+        "CHANNELS": 1,
+        "NUM_CLASSES": 11,
+        "DROP_RATE": 0.5,
+        "LEARNING_RATE": 0.001,
+        "EPOCHS": 20
+    },
+    {
+        "DATA": "orgs",
+        "DATA_PATH": "data",
+        "BATCH_SIZE": 32,
+        "MODEL": "VGG16",
+        "CHANNELS": 1,
+        "NUM_CLASSES": 11,
+        "DROP_RATE": 0.5,
+        "LEARNING_RATE": 0.001,
+        "EPOCHS": 20
+    },
+    {
+        "DATA": "orgs",
+        "DATA_PATH": "data",
+        "BATCH_SIZE": 32,
+        "MODEL": "AlexNet",
+        "CHANNELS": 1,
+        "NUM_CLASSES": 11,
+        "DROP_RATE": 0.5,
+        "LEARNING_RATE": 0.001,
+        "EPOCHS": 20
     }
 ]

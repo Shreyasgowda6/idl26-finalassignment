@@ -27,8 +27,8 @@ The main benchmark evaluates **AlexNet**, **VGG16**, and **ResNet18** on four me
 
 The project also includes:
 
-- an efficient **MiniResNet** model and full green-efficiency profiling for the Green Initiative analysis
-- transfer learning from `orgs` to the smaller `organs` dataset
+- an efficient MiniResNet model and full green-efficiency profiling for the Green Initiative analysis
+- transfer learning from orgs to the smaller organs dataset
 - CSV logging for benchmark, evaluation, green-profile, and transfer-learning results
 
 ---
@@ -67,12 +67,6 @@ Create and activate a Python environment:
 ```bash
 python -m venv venv
 ```
-
-On Windows PowerShell:
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
-.\venv\Scripts\Activate.ps1
 ```
 
 Install dependencies:
@@ -91,7 +85,7 @@ Download the assignment datasets from:
 
 https://cloud.fiw.fhws.de/s/LpYa2dCW85kwdNn
 
-Place the `.pt` files in the root-level `data/` folder:
+Place the .pt files in the root-level data/ folder:
 
 ```text
 data/
@@ -116,7 +110,7 @@ Dataset configuration used by the pipeline:
 
 ## Running the Code
 
-Run commands from inside the `Code/` directory:
+Run commands from inside the Code/ directory:
 
 ```bash
 cd Code
@@ -124,7 +118,7 @@ cd Code
 
 ### Train One Model
 
-Edit `config.json`, then run:
+Edit config.json, then run:
 
 ```bash
 python train.py
@@ -160,7 +154,7 @@ outputs/evaluation_results.csv
 python train_all.py
 ```
 
-This uses `config_all.json` and writes:
+This uses config_all.json and writes:
 
 ```text
 outputs/benchmark_results.csv
@@ -184,7 +178,7 @@ outputs/green_profile_results.csv
 python transfer_learning.py
 ```
 
-This compares training from scratch against transfer learning from the larger `orgs` checkpoint to the smaller `organs` dataset and writes:
+This compares training from scratch against transfer learning from the larger orgs checkpoint to the smaller organs dataset and writes:
 
 ```text
 outputs/transfer_learning_results.csv
@@ -209,10 +203,10 @@ All 12 main benchmark runs passed the required target accuracies. The detailed b
 
 | File | Main Work Completed |
 |---|---|
-| `data.py` | Corrected dataset file loading and fixed the train/validation split so validation samples are not included in training. |
-| `models.py` | Fixed model architecture issues in VGGBlock, AlexNet, VGG16, and ResNet18 so all models work across the required datasets. Added MiniResNet for the Green Initiative analysis. |
-| `train.py` | Rebuilt the training entry point around `config.json`, proper device selection, configurable dropout, and checkpoint saving. |
-| `fit.py` | Fixed the training loop by resetting gradients each batch and using correctly shaped labels for `CrossEntropyLoss`. |
+| data.py | Corrected dataset file loading and fixed the train/validation split so validation samples are not included in training. |
+| models.py | Fixed model architecture issues in VGGBlock, AlexNet, VGG16, and ResNet18 so all models work across the required datasets. Added MiniResNet for the Green Initiative analysis. |
+| train.py | Rebuilt the training entry point around config.json, proper device selection, configurable dropout, and checkpoint saving. |
+| fit.py | Fixed the training loop by resetting gradients each batch and using correctly shaped labels for CrossEntropyLoss. |
 
 Detailed bug descriptions, root causes, and implemented corrections are documented in [AUDIT_LOG.md](AUDIT_LOG.md).
 
@@ -222,13 +216,10 @@ Detailed bug descriptions, root causes, and implemented corrections are document
 
 | File | Purpose |
 |---|---|
-| `AUDIT_LOG.md` | Documents discovered bugs, root causes, fixes, and related commits |
-| `REPORT.md` | Contains benchmark results, recommendations, Green Initiative analysis, and transfer-learning analysis |
-| `Code/` | Contains the corrected and extended training/evaluation pipeline |
-| `outputs/` | Contains generated CSV result files used for the report |
+| AUDIT_LOG.md | Documents discovered bugs, root causes, fixes, and related commits |
+| REPORT.md | Contains benchmark results, recommendations, Green Initiative analysis, and transfer-learning analysis |
+| Code/ | Contains the corrected and extended training/evaluation pipeline |
+| outputs/ | Contains generated CSV result files used for the report |
 
 ---
 
-## Assignment Context
-
-This repository is based on the official IDL 2026 final assignment template. The original recovered pipeline was incomplete and unstable, and the assignment required restoring the codebase, documenting the incident audit, benchmarking all dataset/model combinations, adding an efficient model for the Green Initiative, and evaluating transfer learning for the scarce `organs` dataset.
